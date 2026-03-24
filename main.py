@@ -35,7 +35,7 @@ while True:
     mp_image = mp.Image(
         image_format=mp.ImageFormat.SRGB,
         data=rgb_frame
-    )
+    )   
 
     # Detect hands
     result = landmarker.detect(mp_image)
@@ -55,6 +55,12 @@ while True:
         cv2.circle(frame, (x1, y1), 10, (255, 0, 0), -1)
         cv2.circle(frame, (x2, y2), 10, (0, 255, 0), -1)
 
+        # Middle finger tip (12)
+        x3 = int(hand[12].x * w)
+        y3 = int(hand[12].y * h)
+
+        cv2.circle(frame, (x3, y3), 10, (0, 0, 255), -1)
+
         # Move mouse
         screen_x = int(x1 * screen_w / w)
         screen_y = int(y1 * screen_h / h)
@@ -67,7 +73,18 @@ while True:
             pyautogui.click()
             cv2.putText(frame, "CLICK", (20, 50),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        
+        if abs(y1 - y3) < 40:  
+            if y3 < y1:  
+                pyautogui.scroll(50)
+                cv2.putText(frame, "SCROLL UP", (20, 100),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
+            elif y3 > y1:  
+                pyautogui.scroll(-50)
+                cv2.putText(frame, "SCROLL DOWN", (20, 100),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                
     cv2.imshow("Virtual Mouse", frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
